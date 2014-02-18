@@ -19,6 +19,7 @@ apply plugin: 'groovy'
 apply plugin: 'idea'
 apply plugin: 'maven'
 apply plugin: 'signing'
+apply plugin: 'maven-publish'
 
 repositories {
     mavenCentral()
@@ -27,13 +28,13 @@ repositories {
 
 dependencies {
     compile gradleApi()
-    compile 'org.cloudfoundry:cloudfoundry-client-lib:1.0.2'
+    compile 'org.cloudfoundry:cloudfoundry-client-lib:1.0.2.BUILD-SNAPSHOT'
     compile 'org.codehaus.groovy:groovy:2.1.6'
     testCompile 'junit:junit:4.8.2'
 }
 
 group = 'org.cloudfoundry'
-version = '1.0.3.BUILD-SNAPSHOT'
+version = '1.0.2.BUILD-SNAPSHOT'
 
 // custom tasks for creating source/javadoc jars
 task sourcesJar(type: Jar, dependsOn:classes) {
@@ -63,18 +64,33 @@ if (project.hasProperty('performRelease')) {
     }
 }
 
-def credentials = [ : ]
-if (project.hasProperty('deployUser') && project.hasProperty('deployPassword')) {
-    credentials << [userName: deployUser, password: deployPassword]
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+
+    repositories {
+        maven {
+            url 'http://artosz02.asv.local/nexus/content/repositories/sdp/'
+
+            credentials {
+                username = "deployment"
+                password = "deployment123"
+            }
+        }
+    }
 }
 
+/*
 uploadArchives {
     repositories {
         mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+//            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
-            repository(id:'sonatype-nexus-staging',url: uri('https://oss.sonatype.org/service/local/staging/deploy/maven2'), authentication: credentials)
-            snapshotRepository(id:'sonatype-nexus-snapshots', url: uri('https://oss.sonatype.org/content/repositories/snapshots'), authentication: credentials)
+            repository(id:'artosz02-nexus',url: uri('http://artosz02.asv.local/nexus/content/repositories/thirdparty'), authentication: credentials)
+//            snapshotRepository(id:'sonatype-nexus-snapshots', url: uri('https://oss.sonatype.org/content/repositories/snapshots'), authentication: credentials)
             pom.project {
                 name 'Cloud Foundry Gradle Plugin'
                 parent {
@@ -117,4 +133,4 @@ uploadArchives {
             }
         }
     }
-}
+}*/
