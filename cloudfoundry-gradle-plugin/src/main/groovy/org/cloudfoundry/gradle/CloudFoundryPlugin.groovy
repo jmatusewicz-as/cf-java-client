@@ -15,6 +15,8 @@
 
 package org.cloudfoundry.gradle
 
+import org.cloudfoundry.gradle.tasks.MapTestUrlCloudFoundryTask
+import org.cloudfoundry.gradle.tasks.UnmapTestUrlCloudFoundryTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -89,6 +91,8 @@ class CloudFoundryPlugin implements Plugin<Project> {
         project.tasks.create('cf_unset_env', UnsetEnvCloudFoundryTask)
         project.tasks.create('cf_map', MapCloudFoundryTask)
         project.tasks.create('cf_unmap', UnmapCloudFoundryTask)
+        project.tasks.create(MapTestUrlCloudFoundryTask.NAME, MapTestUrlCloudFoundryTask)
+        project.tasks.create(UnmapTestUrlCloudFoundryTask.NAME, UnmapTestUrlCloudFoundryTask)
     }
 
 }

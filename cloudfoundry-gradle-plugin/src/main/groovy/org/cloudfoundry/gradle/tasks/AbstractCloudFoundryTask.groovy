@@ -308,6 +308,15 @@ abstract class AbstractCloudFoundryTask extends DefaultTask {
         allUris as List<String>
     }
 
+    String getTestUri() {
+        String domain = propertyOrExtension('domain')
+        String host = propertyOrExtension('host')
+
+        if(!domain || !host) throw new GradleException("could not create test-host because no host or domain given.")
+
+        return "${host}-test.${domain}".toString()
+    }
+
     File getFile() {
         project.cloudfoundry.file
     }

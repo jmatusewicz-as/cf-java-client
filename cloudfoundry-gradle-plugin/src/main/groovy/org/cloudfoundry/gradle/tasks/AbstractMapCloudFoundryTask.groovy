@@ -44,6 +44,29 @@ abstract class AbstractMapCloudFoundryTask extends AbstractCloudFoundryTask {
         applicationUris
     }
 
+    protected List<String> mapTestUriToApplication() {
+        def applicationUris = updateApplicationUrisForTesting { existingUris, passedUris ->
+            existingUris + passedUris
+        }
+        applicationUris as List<String>
+    }
+
+
+    protected List<String> unmapTestUriFromApplication() {
+        def applicationUris = updateApplicationUrisForTesting { existingUris, passedUris ->
+            existingUris - passedUris
+        }
+        applicationUris as List<String>
+    }
+
+    protected List<String> updateApplicationUrisForTesting(Closure c) {
+        CloudApplication app = client.getApplication(application)
+        List<String> applicationUris = c.call(app.uris, testUri).unique()
+        client.updateApplicationUris(application, applicationUris)
+        applicationUris
+    }
+
+
     protected void listUriMappings(def uris) {
         if (verboseEnabled) {
             StringBuilder sb = new StringBuilder("Current uri mappings for ${application}\n")
